@@ -340,6 +340,8 @@ DataManager._databaseFiles.push({name: '$dataQuests', src: 'Quests.json'});
 					SceneManager.push(Scene_QuestLog);
 				} break;
 			}
+
+			window.dispatchEvent(new Event('onQuestUpdate'));
 		}
 	};
 
