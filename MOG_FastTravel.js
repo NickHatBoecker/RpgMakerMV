@@ -53,6 +53,14 @@
  * @desc Virar para traz após cancelar a cena.
  * @default true
  *
+ * @param Show Second Category
+ * @desc Virar para traz após cancelar a cena.
+ * @default 1
+ *
+ * @param Show Third Category
+ * @desc Virar para traz após cancelar a cena.
+ * @default 1
+ *
  * @param List Width
  * @desc Definição da largura da janela da lista.
  * @default 300
@@ -314,6 +322,9 @@
 	Moghunter.fastTravel_Comp_FontSize = Number(Moghunter.parameters['Completion Font Size'] || 22);
     Moghunter.fastTravelNewColor = Number(Moghunter.parameters['New Map Color'] || 6);
 	Moghunter.fastTravel_directionCancel = String(Moghunter.parameters['Turn Back After Cancel'] || "true"); 	
+
+    Moghunter.fastTravel_ShowSecondCategory = Number(Moghunter.parameters['Show Second Category'] || 1);
+    Moghunter.fastTravel_ShowThirdCategory = Number(Moghunter.parameters['Show Third Category'] || 1);
 //=============================================================================
 // ** ImageManager
 //=============================================================================
@@ -842,18 +853,25 @@ SceneFastTravel.prototype.createCompleted = function() {
 //==============================
 SceneFastTravel.prototype.createListName = function() {
     this._listName = [];
-	this._listName[0] = new Sprite(ImageManager.loadfasttravel("ListName_A"))
-	this._listName[0].x = Moghunter.fastTravel_ComA_X;
-	this._listName[0].y = Moghunter.fastTravel_ComA_Y;
-	this._field.addChild(this._listName[0]);
-	this._listName[1] = new Sprite(ImageManager.loadfasttravel("ListName_B"))
-	this._listName[1].x = Moghunter.fastTravel_ComB_X;
-	this._listName[1].y = Moghunter.fastTravel_ComB_Y;	
-	this._field.addChild(this._listName[1]);	
-	this._listName[2] = new Sprite(ImageManager.loadfasttravel("ListName_C"))
-	this._listName[2].x = Moghunter.fastTravel_ComC_X;
-	this._listName[2].y = Moghunter.fastTravel_ComC_Y;	
-	this._field.addChild(this._listName[2]);	
+
+    this._listName[0] = new Sprite(ImageManager.loadfasttravel("ListName_A"))
+    this._listName[0].x = Moghunter.fastTravel_ComA_X;
+    this._listName[0].y = Moghunter.fastTravel_ComA_Y;
+    this._field.addChild(this._listName[0]);
+
+    if (Moghunter.fastTravel_ShowSecondCategory) {
+	   this._listName[1] = new Sprite(ImageManager.loadfasttravel("ListName_B"))
+	   this._listName[1].x = Moghunter.fastTravel_ComB_X;
+	   this._listName[1].y = Moghunter.fastTravel_ComB_Y;
+	   this._field.addChild(this._listName[1]);
+    }
+
+    if (Moghunter.fastTravel_ShowThirdCategory) {
+        this._listName[2] = new Sprite(ImageManager.loadfasttravel("ListName_C"))
+	    this._listName[2].x = Moghunter.fastTravel_ComC_X;
+	    this._listName[2].y = Moghunter.fastTravel_ComC_Y;
+	    this._field.addChild(this._listName[2]);
+    }
 };
 
 //==============================
@@ -861,8 +879,13 @@ SceneFastTravel.prototype.createListName = function() {
 //==============================
 SceneFastTravel.prototype.updateListName = function() {
     this.slideDown(this._listName[0],0,Moghunter.fastTravel_ComA_Y);
-	this.slideDown(this._listName[1],1,Moghunter.fastTravel_ComB_Y);
-	this.slideDown(this._listName[2],2,Moghunter.fastTravel_ComC_Y);
+
+    if (typeof this._listName[1] !== 'undefined') {
+        this.slideDown(this._listName[1],1,Moghunter.fastTravel_ComB_Y);
+    }
+    if (typeof this._listName[2] !== 'undefined') {
+        this.slideDown(this._listName[2],2,Moghunter.fastTravel_ComC_Y);
+    }
 };
 
 //==============================
@@ -901,10 +924,10 @@ SceneFastTravel.prototype.updateCursor = function() {
 	 if (this._Dataindex === 0) {
          this._cursor.x = this._listName[0].x + (this._listName[0].bitmap.width / 2) + Moghunter.fastTravel_CursorX;
 	     this._cursor.y = this._listName[0].y + this._listName[0].bitmap.height + this._cursorAni[1] + Moghunter.fastTravel_CursorY;
-	 } else if (this._Dataindex === 1) {
+	 } else if (typeof this._listName[1] !== 'undefined' && this._Dataindex === 1) {
          this._cursor.x = this._listName[1].x + (this._listName[1].bitmap.width / 2) + Moghunter.fastTravel_CursorX;
 	     this._cursor.y = this._listName[1].y + this._listName[1].bitmap.height + this._cursorAni[1] + Moghunter.fastTravel_CursorY;		 
-	 } else {
+	 } else if (typeof this._listName[2] !== 'undefined') {
          this._cursor.x = this._listName[2].x + (this._listName[2].bitmap.width / 2) + Moghunter.fastTravel_CursorX;
 	     this._cursor.y = this._listName[2].y + this._listName[2].bitmap.height + this._cursorAni[1] + Moghunter.fastTravel_CursorY;				 
 	 };
@@ -1147,12 +1170,12 @@ SceneFastTravel.prototype.checkTouchOnListCom = function() {
      if (this.isOnSprite(this._listName[0])) {
 		 this._Dataindex = 0;
 		 this.nextData(0);
-	 } else if (this.isOnSprite(this._listName[1])) {
+	 } else if (typeof this._listName[1] !== 'undefined' && this.isOnSprite(this._listName[1])) {
 		 this._Dataindex = 1;
 		 this.nextData(0);
-	 } else if (this.isOnSprite(this._listName[2])) {	 
+	 } else if (typeof this._listName[2] !== 'undefined' && this.isOnSprite(this._listName[2])) {
 		 this._Dataindex = 2;
-		 this.nextData(0);		 
+		 this.nextData(0);
 	 };
 };	
 
@@ -1223,15 +1246,18 @@ SceneFastTravel.prototype.setDirection = function(dir) {
 // * next Data
 //==============================
 SceneFastTravel.prototype.nextData = function(value) {
-    this._Dataindex += value;
-	if (this._Dataindex > 2) {this._Dataindex = 0};
-	if (this._Dataindex < 0) {this._Dataindex = 2};
-	SoundManager.playCursor();
-	this._windowList.setID(this._Dataindex);
-	if (String(Moghunter.fastTravel_ListSlide) === "true") {
-	    this._windowList.x = Moghunter.fastTravel_ListX + 100;
-		this._windowList.contentsOpacity = 0;
-	};
+    if (this._listName.length > 1) {
+        this._Dataindex += value;
+        if (this._Dataindex > 2) {this._Dataindex = 0};
+        if (this._Dataindex < 0) {this._Dataindex = 2};
+        SoundManager.playCursor();
+        this._windowList.setID(this._Dataindex);
+
+        if (String(Moghunter.fastTravel_ListSlide) === "true") {
+           this._windowList.x = Moghunter.fastTravel_ListX + 100;
+           this._windowList.contentsOpacity = 0;
+        };
+    }
 }; 
 
 //==============================
